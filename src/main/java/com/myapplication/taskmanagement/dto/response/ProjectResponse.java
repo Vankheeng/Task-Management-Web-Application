@@ -1,7 +1,5 @@
 package com.myapplication.taskmanagement.dto.response;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -18,5 +16,5 @@ public class ProjectResponse {
     String name;
     String description;
     LocalDate createdAt;
-    Set<ListResponse> lists;
+    Set<TaskListResponse> lists;
 }

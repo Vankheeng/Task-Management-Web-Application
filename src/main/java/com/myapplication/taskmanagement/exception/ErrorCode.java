@@ -11,10 +11,13 @@ public enum ErrorCode {
     USER_NOT_EXISTED(1005, "User not existed", HttpStatus.NOT_FOUND),
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
-    PERMISSION_NOT_EXISTED(1008, "Permission not existed", HttpStatus.NOT_FOUND),
-    DOB_INVALID(1009, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
-    PHONENUMBER_EXISTED(1010, "Phone number existed", HttpStatus.BAD_REQUEST),
-    EMAIL_EXISTED(1011, "Email existed", HttpStatus.BAD_REQUEST);
+    DOB_INVALID(1008, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
+    PHONENUMBER_EXISTED(1009, "Phone number existed", HttpStatus.BAD_REQUEST),
+    EMAIL_EXISTED(1010, "Email existed", HttpStatus.BAD_REQUEST),
+
+    TEAM_NOT_EXISTED(1101, "Team not existed", HttpStatus.NOT_FOUND),
+
+    TEAMMEMBER_NOT_EXISTED(1201, "Team member not existed", HttpStatus.NOT_FOUND);
 
     ErrorCode(int code, String message, HttpStatusCode staticCode){
         this.code = code;

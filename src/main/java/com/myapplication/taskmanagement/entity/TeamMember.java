@@ -1,6 +1,7 @@
 package com.myapplication.taskmanagement.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.myapplication.taskmanagement.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,10 +22,12 @@ public class TeamMember {
 
     @ManyToOne
     @JoinColumn(name="userId")
+    @JsonIgnoreProperties({"teamMembers", "projects"})
     private User user;
 
     @ManyToOne
     @JoinColumn(name="teamId")
+    @JsonIgnoreProperties({"teamMembers", "projects"})
     private Team team;
 
     @Enumerated(EnumType.STRING)

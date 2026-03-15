@@ -18,7 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 
 @Service
 @RequiredArgsConstructor
@@ -77,9 +76,9 @@ public class UserService {
 
     public UserResponse updateUser(UserUpdateRequest request) {
         var context = SecurityContextHolder.getContext();
-        String name = context.getAuthentication().getName();
+        String userId = context.getAuthentication().getName();
 
-        User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         if (!user.getEmail().equals(request.getEmail())) {
             if (userRepository.existsByEmail(request.getEmail())) {
@@ -104,9 +103,9 @@ public class UserService {
 
     public UserResponse updatePassword(PasswordUpdateRequest request) {
         var context = SecurityContextHolder.getContext();
-        String name = context.getAuthentication().getName();
+        String userId = context.getAuthentication().getName();
 
-        User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
@@ -115,9 +114,9 @@ public class UserService {
 
     public UserResponse getMyInfor() {
         var context = SecurityContextHolder.getContext();
-        String name = context.getAuthentication().getName();
+        String userId = context.getAuthentication().getName();
 
-        User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         return userMapper.toUserResponse(user);
     }

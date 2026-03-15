@@ -12,6 +12,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level =  AccessLevel.PRIVATE)
 public class TeamMemberRequest {
     String userId;
-    String TeamId;
+    String teamId;
     Role role;
 }

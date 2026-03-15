@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Data
@@ -24,6 +25,20 @@ public class Task {
     LocalDate createdAt;
 
     @ManyToOne
-    @JoinColumn(name="statusId")
+    @JoinColumn(name = "statusId")
     Status status;
+
+    @ManyToOne
+    @JoinColumn(name = "taskListId")
+    TaskList taskList;
+
+    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
+    Set<TaskAssignment> taskAssignments;
+
+    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
+    Set<TaskAttachment> taskAttachments;
+
+    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
+    Set<Comment> comments;
+
 }
