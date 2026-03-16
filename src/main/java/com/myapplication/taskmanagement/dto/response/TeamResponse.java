@@ -18,5 +18,5 @@ public class TeamResponse {
     String name;
     LocalDate createdAt;
     Set<TeamMemberResponse> teamMembers;
-    Set<Project> projects;
+    Set<ProjectResponse> projects;
 }

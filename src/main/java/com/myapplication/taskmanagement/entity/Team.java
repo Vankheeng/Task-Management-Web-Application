@@ -15,7 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)  // thêm dòng này
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Team {
+public class Team extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @EqualsAndHashCode.Include  // chỉ dùng id để so sánh

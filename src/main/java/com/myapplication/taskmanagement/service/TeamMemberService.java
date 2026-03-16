@@ -33,7 +33,7 @@ public class TeamMemberService {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        Team team = teamRepository.findById(request.getTeamId())
+        Team team = teamRepository.findByIdAndActive(request.getTeamId(), true)
                 .orElseThrow(() -> new AppException(ErrorCode.TEAM_NOT_EXISTED));
 
         TeamMember teamMember = TeamMember.builder()
@@ -47,25 +47,26 @@ public class TeamMemberService {
 
     public List<TeamMemberResponse> getTeamMembersByTeamId(String teamId){
 
-        if(!teamRepository.existsById(teamId)){
+        if(!teamRepository.existsByIdAndActive(teamId, true)){
             throw new AppException(ErrorCode.TEAM_NOT_EXISTED);
         }
 
-        return teamMemberRepository.findAllByTeamId(teamId)
+        return teamMemberRepository.findAllByTeamIdAndActive(teamId, true)
                 .stream()
                 .map(teamMemberMapper::toTeamMemberResponse)
                 .toList();
     }
 
     public TeamMemberResponse updateTeamMember(String teamMemberId, TeamMemberRequest request){
-        TeamMember teamMember = teamMemberRepository.findById(teamMemberId)
+        TeamMember teamMember = teamMemberRepository.findByIdAndActive(teamMemberId, true)
                 .orElseThrow(() -> new AppException(ErrorCode.TEAMMEMBER_NOT_EXISTED));
 
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        Team team = teamRepository.findById(request.getTeamId())
+        Team team = teamRepository.findByIdAndActive(request.getTeamId(), true)
                 .orElseThrow(() -> new AppException(ErrorCode.TEAM_NOT_EXISTED));
+
 
         teamMember.setUser(user);
         teamMember.setTeam(team);
@@ -75,10 +76,11 @@ public class TeamMemberService {
     }
 
     public void deleteTeamMember(String teamMemberId){
-        if(!teamMemberRepository.existsById(teamMemberId)){
-            throw new AppException(ErrorCode.TEAM_NOT_EXISTED);
-        }
-        teamMemberRepository.deleteById(teamMemberId);
+        TeamMember teamMember = teamMemberRepository.findByIdAndActive(teamMemberId, true)
+                .orElseThrow(() -> new AppException(ErrorCode.TEAMMEMBER_NOT_EXISTED));
+
+        teamMember.setActive(false); // soft delete
+        teamMemberRepository.save(teamMember);
     }
 
 }

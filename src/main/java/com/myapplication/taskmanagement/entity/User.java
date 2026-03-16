@@ -5,7 +5,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 @Entity
 @Data
@@ -13,13 +12,16 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level =  AccessLevel.PRIVATE)
-public class Status extends BaseEntity{
+public class User extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
-    String status;
 
-    @ManyToOne
-    @JoinColumn(name="projectId")
-    Project project;
+    @Column(name="username", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
+    String username;
+    String password;
+    String fullName;
+    String email;
+    String phoneNumber;
+    LocalDate dob;
 }

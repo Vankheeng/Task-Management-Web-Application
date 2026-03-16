@@ -17,7 +17,8 @@ public enum ErrorCode {
 
     TEAM_NOT_EXISTED(1101, "Team not existed", HttpStatus.NOT_FOUND),
 
-    TEAMMEMBER_NOT_EXISTED(1201, "Team member not existed", HttpStatus.NOT_FOUND);
+    TEAMMEMBER_NOT_EXISTED(1201, "This user is not member of this team", HttpStatus.NOT_FOUND);
+
 
     ErrorCode(int code, String message, HttpStatusCode staticCode){
         this.code = code;

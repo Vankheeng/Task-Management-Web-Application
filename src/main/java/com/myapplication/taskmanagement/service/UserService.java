@@ -10,6 +10,7 @@ import com.myapplication.taskmanagement.exception.AppException;
 import com.myapplication.taskmanagement.exception.ErrorCode;
 import com.myapplication.taskmanagement.mapper.UserMapper;
 import com.myapplication.taskmanagement.repository.UserRepository;
+import com.myapplication.taskmanagement.utils.SecurityUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -75,8 +76,7 @@ public class UserService {
 
 
     public UserResponse updateUser(UserUpdateRequest request) {
-        var context = SecurityContextHolder.getContext();
-        String userId = context.getAuthentication().getName();
+        var userId = SecurityUtils.getCurrentUserId();
 
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
@@ -102,8 +102,7 @@ public class UserService {
     }
 
     public UserResponse updatePassword(PasswordUpdateRequest request) {
-        var context = SecurityContextHolder.getContext();
-        String userId = context.getAuthentication().getName();
+        var userId = SecurityUtils.getCurrentUserId();
 
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
@@ -113,8 +112,7 @@ public class UserService {
     }
 
     public UserResponse getMyInfor() {
-        var context = SecurityContextHolder.getContext();
-        String userId = context.getAuthentication().getName();
+        var userId = SecurityUtils.getCurrentUserId();
 
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 

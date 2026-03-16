@@ -15,19 +15,17 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level =  AccessLevel.PRIVATE)
-public class TeamMember {
+public class TeamMember extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
     @ManyToOne
     @JoinColumn(name="userId")
-    @JsonIgnoreProperties({"teamMembers", "projects"})
     private User user;
 
     @ManyToOne
     @JoinColumn(name="teamId")
-    @JsonIgnoreProperties({"teamMembers", "projects"})
     private Team team;
 
     @Enumerated(EnumType.STRING)

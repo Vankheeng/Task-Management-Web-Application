@@ -12,6 +12,6 @@ public interface ProjectMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "team", ignore = true)
     @Mapping(target = "taskLists", ignore = true)
-    Project toTeam(ProjectRequest request);
-    ProjectResponse toTeamResponse(Project project);
+    Project toProject(ProjectRequest request);
+    ProjectResponse toProjectResponse(Project project);
 }

@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class InvalidatedToken {
+public class InvalidatedToken extends BaseEntity{
     @Id
     String id;
 
