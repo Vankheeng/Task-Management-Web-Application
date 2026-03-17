@@ -2,7 +2,6 @@ package com.myapplication.taskmanagement.service;
 
 import com.myapplication.taskmanagement.dto.request.TeamMemberRequest;
 import com.myapplication.taskmanagement.dto.request.TeamRequest;
-import com.myapplication.taskmanagement.dto.response.TeamMemberResponse;
 import com.myapplication.taskmanagement.dto.response.TeamResponse;
 import com.myapplication.taskmanagement.entity.Team;
 import com.myapplication.taskmanagement.entity.TeamMember;
@@ -16,7 +15,6 @@ import jakarta.persistence.EntityManager;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,17 +74,6 @@ public class TeamService {
                     .distinct()
                     .map(teamMapper::toTeamResponse)
                     .toList();
-    }
-
-    private void checkAdminRole(String teamId){
-        String userId = SecurityUtils.getCurrentUserId();
-        TeamMember teamMember = teamMemberRepository
-                .findByTeamIdAndUserIdAndActive(teamId, userId, true)
-                .orElseThrow(() -> new AppException(ErrorCode.TEAMMEMBER_NOT_EXISTED));
-
-        if(!teamMember.getRole().equals(Role.ADMIN)){
-            throw new AppException(ErrorCode.UNAUTHORIZED);
-        }
     }
 
     public TeamResponse updateTeam(String teamId, TeamRequest request){

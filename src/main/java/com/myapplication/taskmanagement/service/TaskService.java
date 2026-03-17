@@ -5,7 +5,6 @@ import com.myapplication.taskmanagement.dto.response.TaskResponse;
 import com.myapplication.taskmanagement.entity.Status;
 import com.myapplication.taskmanagement.entity.Task;
 import com.myapplication.taskmanagement.entity.TaskList;
-import com.myapplication.taskmanagement.entity.User;
 import com.myapplication.taskmanagement.exception.AppException;
 import com.myapplication.taskmanagement.exception.ErrorCode;
 import com.myapplication.taskmanagement.mapper.TaskMapper;
