@@ -17,5 +17,5 @@ public class TaskRequest {
     Priority priority;
     LocalDate deadline;
     String statusId;
-    String listId;
+    String taskListId;
 }

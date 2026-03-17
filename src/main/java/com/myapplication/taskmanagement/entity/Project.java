@@ -8,14 +8,17 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @FieldDefaults(level =  AccessLevel.PRIVATE)
 public class Project extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @EqualsAndHashCode.Include
     String id;
     String name;
     String description;
@@ -27,4 +30,7 @@ public class Project extends BaseEntity{
 
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     Set<TaskList> taskLists;
+
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    Set<Status> statuses;
 }

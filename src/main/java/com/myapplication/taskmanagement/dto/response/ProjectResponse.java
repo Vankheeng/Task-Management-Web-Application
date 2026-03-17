@@ -16,5 +16,6 @@ public class ProjectResponse {
     String name;
     String description;
     LocalDate createdAt;
-    Set<TaskListResponse> lists;
+    Set<TaskListResponse> taskLists;
+    Set<StatusResponse> statuses;
 }

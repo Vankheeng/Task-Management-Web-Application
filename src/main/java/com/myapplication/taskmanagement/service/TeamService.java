@@ -35,6 +35,12 @@ public class TeamService {
     TaskRepository taskRepository;
     TeamMemberService teamMemberService;
     EntityManager entityManager;
+    TaskAssignmentRepository taskAssignmentRepository;
+    TaskAttachmentRepository taskAttachmentRepository;
+    CommentRepository commentRepository;
+    NotificationRepository notificationRepository;
+    StatusRepository statusRepository;
+    SecurityUtils securityUtils;
 
     @Transactional
     public TeamResponse createTeam(TeamRequest request){
@@ -52,8 +58,8 @@ public class TeamService {
 
         teamMemberService.createTeamMember(teamMemberRequest);
 
-        entityManager.flush();  // đẩy tất cả xuống DB
-        entityManager.clear();  // xóa cache session
+        entityManager.flush();
+        entityManager.clear();
 
         team = teamRepository.findByIdWithMembers(team.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.TEAM_NOT_EXISTED));
@@ -106,7 +112,7 @@ public class TeamService {
         Team team = teamRepository.findByIdAndActive(teamId, true)
                 .orElseThrow(() -> new AppException(ErrorCode.TEAM_NOT_EXISTED));
 
-        checkAdminRole(teamId);
+        securityUtils.checkAdminRole(teamId);
 
         team.setActive(false);
         teamRepository.save(team);
@@ -114,5 +120,10 @@ public class TeamService {
         projectRepository.deactivateAllByTeamId(teamId);
         taskListRepository.deactivateAllByProjectTeamId(teamId);
         taskRepository.deactivateAllByTeamId(teamId);
+        taskAssignmentRepository.deactivateAllByTeamId(teamId);
+        taskAttachmentRepository.deactivateAllByTeamId(teamId);
+        commentRepository.deactivateAllByTeamId(teamId);
+        notificationRepository.deactivateAllByTeamId(teamId);
+        statusRepository.deactivateAllByTeamId(teamId);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, String> {
@@ -16,4 +17,5 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
     void deactivateAllByTeamId(@Param("teamId") String teamId);
 
     List<Project> findAllByTeamIdAndActive(String teamId, boolean active);
+    Optional<Project> findByIdAndActive(String id, boolean active);
 }

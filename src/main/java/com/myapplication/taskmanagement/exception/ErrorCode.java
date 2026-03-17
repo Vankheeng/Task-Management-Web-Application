@@ -15,9 +15,18 @@ public enum ErrorCode {
     PHONENUMBER_EXISTED(1009, "Phone number existed", HttpStatus.BAD_REQUEST),
     EMAIL_EXISTED(1010, "Email existed", HttpStatus.BAD_REQUEST),
 
-    TEAM_NOT_EXISTED(1101, "Team not existed", HttpStatus.NOT_FOUND),
+    TEAM_NOT_EXISTED(2001, "Team not existed", HttpStatus.NOT_FOUND),
 
-    TEAMMEMBER_NOT_EXISTED(1201, "This user is not member of this team", HttpStatus.NOT_FOUND);
+    TEAMMEMBER_NOT_EXISTED(3001, "This user is not member of this team", HttpStatus.NOT_FOUND),
+
+    PROJECT_NOT_EXISTED(4001, "Project not existed", HttpStatus.NOT_FOUND),
+
+    TASKLIST_NOT_EXISTED(5001, "TaskList not existed", HttpStatus.NOT_FOUND),
+
+    TASK_NOT_EXISTED(6001, "Task not existed", HttpStatus.NOT_FOUND),
+    INVALID_DEADLINE(6002, "Deadline cannot be in the past", HttpStatus.BAD_REQUEST),
+
+    STATUS_NOT_EXISTED(7001, "Status not existed", HttpStatus.NOT_FOUND);
 
 
     ErrorCode(int code, String message, HttpStatusCode staticCode){
