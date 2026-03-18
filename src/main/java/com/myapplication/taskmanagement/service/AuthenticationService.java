@@ -85,7 +85,7 @@ public class AuthenticationService {
                 .issuer("taskmanager.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(VALID_DURATION, ChronoUnit.HOURS).toEpochMilli()))
+                        Instant.now().plus(VALID_DURATION, ChronoUnit.DAYS).toEpochMilli()))
                 .jwtID(UUID.randomUUID().toString())
                 .build();
 
@@ -143,9 +143,9 @@ public class AuthenticationService {
 
         invalidatedTokenRepository.save(invalidatedToken);
 
-        var username = signJWT.getJWTClaimsSet().getSubject();
+        var userId = signJWT.getJWTClaimsSet().getSubject();
 
-        var user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
+        var user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
         var token = generateToken(user);
 
@@ -164,7 +164,7 @@ public class AuthenticationService {
                 .getJWTClaimsSet()
                 .getIssueTime()
                 .toInstant()
-                .plus(REFRESH_DURATION, ChronoUnit.HOURS)
+                .plus(REFRESH_DURATION, ChronoUnit.DAYS)
                 .toEpochMilli())
                 : signedJWT.getJWTClaimsSet().getExpirationTime();
 

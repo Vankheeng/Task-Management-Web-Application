@@ -13,13 +13,11 @@ public interface TeamMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "teamMembers", ignore = true)
-    @Mapping(target = "projects", ignore = true)
     Team toTeam(TeamRequest request);
     TeamResponse toTeamResponse(Team team);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "teamMembers", ignore = true)
-    @Mapping(target = "projects", ignore = true)
     void updateTeam(@MappingTarget Team team, TeamRequest request);
 }

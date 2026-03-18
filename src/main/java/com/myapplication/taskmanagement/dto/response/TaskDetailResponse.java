@@ -11,13 +11,16 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level =  AccessLevel.PRIVATE)
-public class TaskResponse {
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class TaskDetailResponse {
     String id;
     String title;
+    String description;
     Priority priority;
     LocalDate deadline;
     LocalDate createdAt;
     StatusResponse status;
     Set<TaskAssignmentResponse> taskAssignments;
+    Set<TaskAttachmentResponse> taskAttachments;
+    Set<CommentResponse> comments;
 }

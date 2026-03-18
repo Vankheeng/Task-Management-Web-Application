@@ -4,6 +4,7 @@ package com.myapplication.taskmanagement.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -24,8 +25,6 @@ public class Team extends BaseEntity{
     LocalDate createdAt;
 
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
+    @SQLRestriction("active = 1")
     Set<TeamMember> teamMembers;
-
-    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
-    Set<Project> projects;
 }

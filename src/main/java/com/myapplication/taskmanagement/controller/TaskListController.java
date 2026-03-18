@@ -2,6 +2,7 @@ package com.myapplication.taskmanagement.controller;
 
 import com.myapplication.taskmanagement.dto.request.TaskListRequest;
 import com.myapplication.taskmanagement.dto.response.APIResponse;
+import com.myapplication.taskmanagement.dto.response.TaskListDetailResponse;
 import com.myapplication.taskmanagement.dto.response.TaskListResponse;
 import com.myapplication.taskmanagement.service.TaskListService;
 import lombok.AccessLevel;
@@ -32,10 +33,17 @@ public class TaskListController {
                 .build();
     }
 
+    @GetMapping("/{taskListId}")
+    APIResponse<TaskListDetailResponse> getTaskListById(@PathVariable String taskListId){
+        return APIResponse.<TaskListDetailResponse>builder()
+                .result(taskListService.getTaskListById(taskListId))
+                .build();
+    }
+
     @PutMapping("/{taskListId}")
-    APIResponse<TaskListResponse> updateTaskList(@PathVariable String taskListId,
+    APIResponse<TaskListDetailResponse> updateTaskList(@PathVariable String taskListId,
                                                  @RequestBody TaskListRequest request){
-        return APIResponse.<TaskListResponse>builder()
+        return APIResponse.<TaskListDetailResponse>builder()
                 .result(taskListService.updateTaskList(taskListId, request))
                 .build();
     }

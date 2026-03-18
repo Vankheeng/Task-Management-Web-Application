@@ -13,9 +13,11 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InvalidatedToken extends BaseEntity{
     @Id
+    @EqualsAndHashCode.Include
     String id;
 
     Date expiryTime;

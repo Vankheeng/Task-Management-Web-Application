@@ -1,10 +1,8 @@
 package com.myapplication.taskmanagement.dto.response;
 
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
 import java.util.Set;
 
 @Data
@@ -12,9 +10,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level =  AccessLevel.PRIVATE)
-public class TeamResponse {
+public class TaskListDetailResponse {
     String id;
     String name;
-    LocalDate createdAt;
-    Set<TeamMemberResponse> teamMembers;
+    Set<TaskResponse> tasks;
 }

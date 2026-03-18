@@ -2,6 +2,7 @@ package com.myapplication.taskmanagement.controller;
 
 import com.myapplication.taskmanagement.dto.request.TaskRequest;
 import com.myapplication.taskmanagement.dto.response.APIResponse;
+import com.myapplication.taskmanagement.dto.response.TaskDetailResponse;
 import com.myapplication.taskmanagement.dto.response.TaskResponse;
 import com.myapplication.taskmanagement.service.TaskService;
 import lombok.AccessLevel;
@@ -19,8 +20,8 @@ public class TaskController {
     TaskService taskService;
 
     @PostMapping
-    APIResponse<TaskResponse> createTask(@RequestBody TaskRequest request){
-        return APIResponse.<TaskResponse>builder()
+    APIResponse<TaskDetailResponse> createTask(@RequestBody TaskRequest request){
+        return APIResponse.<TaskDetailResponse>builder()
                 .result(taskService.createTask(request))
                 .build();
     }
@@ -32,10 +33,17 @@ public class TaskController {
                 .build();
     }
 
+    @GetMapping("/{taskId}")
+    APIResponse<TaskDetailResponse> getTaskById(@PathVariable String taskId){
+        return APIResponse.<TaskDetailResponse>builder()
+                .result(taskService.getTaskById(taskId))
+                .build();
+    }
+
     @PutMapping("/{taskId}")
-    APIResponse<TaskResponse> updateTask(@PathVariable String taskId,
+    APIResponse<TaskDetailResponse> updateTask(@PathVariable String taskId,
                                          @RequestBody TaskRequest request){
-        return APIResponse.<TaskResponse>builder()
+        return APIResponse.<TaskDetailResponse>builder()
                 .result(taskService.updateTask(taskId, request))
                 .build();
     }

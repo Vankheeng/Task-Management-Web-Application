@@ -1,6 +1,7 @@
 package com.myapplication.taskmanagement.mapper;
 
 import com.myapplication.taskmanagement.dto.request.TaskRequest;
+import com.myapplication.taskmanagement.dto.response.TaskDetailResponse;
 import com.myapplication.taskmanagement.dto.response.TaskResponse;
 import com.myapplication.taskmanagement.entity.Task;
 import org.mapstruct.Mapper;
@@ -23,6 +24,8 @@ public interface TaskMapper {
     Task toTask(TaskRequest request);
 
     TaskResponse toTaskResponse(Task task);
+
+    TaskDetailResponse toTaskDetailResponse(Task task);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

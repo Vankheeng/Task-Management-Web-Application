@@ -1,6 +1,7 @@
 package com.myapplication.taskmanagement.service;
 
 import com.myapplication.taskmanagement.dto.request.TaskListRequest;
+import com.myapplication.taskmanagement.dto.response.TaskListDetailResponse;
 import com.myapplication.taskmanagement.dto.response.TaskListResponse;
 import com.myapplication.taskmanagement.entity.Project;
 import com.myapplication.taskmanagement.entity.TaskList;
@@ -57,7 +58,14 @@ public class TaskListService {
                 .toList();
     }
 
-    public TaskListResponse updateTaskList(String taskListId, TaskListRequest request){
+    public TaskListDetailResponse getTaskListById(String taskListId){
+        TaskList taskList = taskListRepository.findByIdAndActive(taskListId, true)
+                .orElseThrow(() -> new AppException(ErrorCode.TASKLIST_NOT_EXISTED));
+        securityUtils.checkTeamMember(taskList.getProject().getTeam().getId());
+        return taskListMapper.toTaskListDetailResponse(taskList);
+    }
+
+    public TaskListDetailResponse updateTaskList(String taskListId, TaskListRequest request){
         TaskList taskList = taskListRepository.findByIdAndActive(taskListId, true)
                 .orElseThrow(() -> new AppException(ErrorCode.TASKLIST_NOT_EXISTED));
 
@@ -65,7 +73,7 @@ public class TaskListService {
 
         taskListMapper.updateTaskList(taskList, request);
 
-        return taskListMapper.toTaskListResponse(taskListRepository.save(taskList));
+        return taskListMapper.toTaskListDetailResponse(taskListRepository.save(taskList));
     }
 
     @Transactional

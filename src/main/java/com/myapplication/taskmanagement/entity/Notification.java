@@ -33,6 +33,6 @@ public class Notification extends BaseEntity{
     Task task;
 
     @ManyToOne
-    @JoinColumn(name = "projectId")
-    Project project;
+    @JoinColumn(name = "teamId")
+    Team team;
 }

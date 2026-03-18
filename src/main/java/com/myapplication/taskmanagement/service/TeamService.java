@@ -59,7 +59,7 @@ public class TeamService {
         entityManager.flush();
         entityManager.clear();
 
-        team = teamRepository.findByIdWithMembers(team.getId())
+        team = teamRepository.findByIdAndActiveWithMembers(team.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.TEAM_NOT_EXISTED));
 
         return teamMapper.toTeamResponse(team);

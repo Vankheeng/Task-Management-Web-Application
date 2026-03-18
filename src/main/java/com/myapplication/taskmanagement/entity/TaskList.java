@@ -3,6 +3,7 @@ package com.myapplication.taskmanagement.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.Set;
 
@@ -26,5 +27,6 @@ public class TaskList extends BaseEntity {
     Project project;
 
     @OneToMany(mappedBy = "taskList", fetch = FetchType.LAZY)
+    @SQLRestriction("active = 1")
     Set<Task> tasks;
 }

@@ -17,6 +17,6 @@ public class NotificationResponse {
     String message;
     Boolean isRead;
     LocalDate createdAt;
-    TaskResponse task;
-    ProjectResponse project;
+    TaskSummaryResponse task;
+    TeamSummaryResponse team;
 }

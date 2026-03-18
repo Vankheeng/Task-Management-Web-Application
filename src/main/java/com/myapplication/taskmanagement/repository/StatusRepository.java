@@ -23,5 +23,6 @@ public interface StatusRepository extends JpaRepository<Status, String> {
     @Query("UPDATE Status s SET s.active = false WHERE s.project.team.id = :teamId")
     void deactivateAllByTeamId(@Param("teamId") String teamId);
 
-    Optional<Status> findByIdAndProjectIdAndActive(String name, String projectId, boolean active);
+    Optional<Status> findByIdAndProject_IdAndActive(String id, String projectId, boolean active);
+    Optional<Status> findByStatusAndProject_IdAndActive(String status, String projectId, boolean active);
 }

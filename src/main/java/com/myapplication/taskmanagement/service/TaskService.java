@@ -1,10 +1,9 @@
 package com.myapplication.taskmanagement.service;
 
 import com.myapplication.taskmanagement.dto.request.TaskRequest;
+import com.myapplication.taskmanagement.dto.response.TaskDetailResponse;
 import com.myapplication.taskmanagement.dto.response.TaskResponse;
-import com.myapplication.taskmanagement.entity.Status;
-import com.myapplication.taskmanagement.entity.Task;
-import com.myapplication.taskmanagement.entity.TaskList;
+import com.myapplication.taskmanagement.entity.*;
 import com.myapplication.taskmanagement.exception.AppException;
 import com.myapplication.taskmanagement.exception.ErrorCode;
 import com.myapplication.taskmanagement.mapper.TaskMapper;
@@ -32,14 +31,12 @@ public class TaskService {
     CommentRepository commentRepository;
     NotificationRepository notificationRepository;
     SecurityUtils securityUtils;
+    NotificationService notificationService;
+    UserRepository userRepository;
 
-    public TaskResponse createTask(TaskRequest request){
+    public TaskDetailResponse createTask(TaskRequest request){
         TaskList taskList = taskListRepository.findByIdAndActive(request.getTaskListId(), true)
                 .orElseThrow(() -> new AppException(ErrorCode.TASKLIST_NOT_EXISTED));
-
-        Status status = statusRepository
-                .findByIdAndProjectIdAndActive(request.getStatusId(), taskList.getProject().getId(), true)
-                .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_EXISTED));
 
         securityUtils.checkTeamMember(taskList.getProject().getTeam().getId());
 
@@ -50,9 +47,21 @@ public class TaskService {
         Task task = taskMapper.toTask(request);
         task.setTaskList(taskList);
         task.setCreatedAt(LocalDate.now());
+
+        Status status;
+        if(request.getStatusId() != null && !request.getStatusId().isEmpty()){
+            status = statusRepository.findByIdAndProject_IdAndActive(
+                            request.getStatusId(), taskList.getProject().getId(), true)
+                    .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_EXISTED));
+        } else {
+            status = statusRepository
+                    .findByStatusAndProject_IdAndActive("To Do", taskList.getProject().getId(), true)
+                    .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_EXISTED));
+        }
+
         task.setStatus(status);
 
-        return taskMapper.toTaskResponse(taskRepository.save(task));
+        return taskMapper.toTaskDetailResponse(taskRepository.save(task));
     }
 
     public List<TaskResponse> getTasksByTaskListId(String taskListId){
@@ -67,12 +76,18 @@ public class TaskService {
                 .toList();
     }
 
-    public TaskResponse updateTask(String taskId, TaskRequest request){
+    public TaskDetailResponse getTaskById(String taskId){
         Task task = taskRepository.findByIdAndActive(taskId, true)
                 .orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_EXISTED));
 
-        TaskList taskList = taskListRepository.findByIdAndActive(request.getTaskListId(), true)
-                .orElseThrow(() -> new AppException(ErrorCode.TASKLIST_NOT_EXISTED));
+        securityUtils.checkTeamMember(task.getTaskList().getProject().getTeam().getId());
+
+        return taskMapper.toTaskDetailResponse(task);
+    }
+
+    public TaskDetailResponse updateTask(String taskId, TaskRequest request){
+        Task task = taskRepository.findByIdAndActive(taskId, true)
+                .orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_EXISTED));
 
         securityUtils.checkTeamMember(task.getTaskList().getProject().getTeam().getId());
 
@@ -80,14 +95,37 @@ public class TaskService {
             throw new AppException(ErrorCode.INVALID_DEADLINE);
         }
 
-        Status status = statusRepository
-                .findByIdAndProjectIdAndActive(request.getStatusId(), taskList.getProject().getId(), true)
-                .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_EXISTED));
+        Status oldStatus = task.getStatus() != null ? task.getStatus() : null;
+        boolean statusChanged = false;
+        Status newStatus = null;
+
+        if(request.getStatusId() != null && !request.getStatusId().isEmpty()){
+            newStatus = statusRepository.findByIdAndProject_IdAndActive(
+                            request.getStatusId(), task.getTaskList().getProject().getId(), true)
+                    .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_EXISTED));
+            if(oldStatus == null || !oldStatus.equals(newStatus)){
+                statusChanged = true;
+                task.setStatus(newStatus);
+            }
+        }
 
         taskMapper.updateTask(task, request);
-        task.setStatus(status);
+        Task saved = taskRepository.save(task);
+        List<TaskAssignment> assignments = taskAssignmentRepository
+                .findAllByTask_IdAndActive(taskId, true);
 
-        return taskMapper.toTaskResponse(taskRepository.save(task));
+        User createdBy = userRepository.findById(SecurityUtils.getCurrentUserId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        final Status finalNewStatus = newStatus;
+        if(statusChanged && newStatus != null){
+            assignments.stream()
+                    .filter(ta -> !ta.getUser().getId().equals(createdBy.getId()))
+                    .forEach(ta -> notificationService.notifyTaskStatusUpdated(
+                            ta.getUser(), saved, finalNewStatus.getStatus()));
+        }
+
+        return taskMapper.toTaskDetailResponse(saved);
     }
 
     @Transactional

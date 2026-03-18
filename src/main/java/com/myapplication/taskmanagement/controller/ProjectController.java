@@ -32,6 +32,14 @@ public class ProjectController {
                 .build();
     }
 
+    @GetMapping("/{projectId}")
+    APIResponse<ProjectResponse> getProjectsById(@PathVariable String projectId){
+        return APIResponse.<ProjectResponse>builder()
+                .result(projectService.getProjectById(projectId))
+                .build();
+    }
+
+
     @PutMapping("/{projectId}")
     APIResponse<ProjectResponse> updateProject(@PathVariable String projectId,
                                                @RequestBody ProjectRequest request){

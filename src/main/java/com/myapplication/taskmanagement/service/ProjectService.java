@@ -10,6 +10,7 @@ import com.myapplication.taskmanagement.exception.ErrorCode;
 import com.myapplication.taskmanagement.mapper.ProjectMapper;
 import com.myapplication.taskmanagement.repository.*;
 import com.myapplication.taskmanagement.utils.SecurityUtils;
+import jakarta.persistence.EntityManager;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -34,7 +35,9 @@ public class ProjectService {
     CommentRepository commentRepository;
     NotificationRepository notificationRepository;
     StatusRepository statusRepository;
+    EntityManager entityManager;
 
+    @Transactional
     public ProjectResponse createProject(ProjectRequest request){
         Team team = teamRepository.findByIdAndActive(request.getTeamId(), true)
                 .orElseThrow(() -> new AppException(ErrorCode.TEAM_NOT_EXISTED));
@@ -58,24 +61,33 @@ public class ProjectService {
 
         statusRepository.saveAll(List.of(todo, complete));
 
+        entityManager.flush();
+        entityManager.clear();
+
+        project = projectRepository.findByIdAndActive(project.getId(), true)
+                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_EXISTED));
+
+
         return projectMapper.toProjectResponse(project);
     }
 
     public List<ProjectResponse> getProjectsByTeamId(String teamId){
-        try {
-            teamRepository.findByIdAndActive(teamId, true)
-                    .orElseThrow(() -> new AppException(ErrorCode.TEAM_NOT_EXISTED));
+        teamRepository.findByIdAndActive(teamId, true)
+                .orElseThrow(() -> new AppException(ErrorCode.TEAM_NOT_EXISTED));
 
-            securityUtils.checkTeamMember(teamId);
+        securityUtils.checkTeamMember(teamId);
 
-            return projectRepository.findAllByTeamIdAndActive(teamId, true)
-                    .stream()
-                    .map(projectMapper::toProjectResponse)
-                    .toList();
-        }catch (Exception e){
-            e.printStackTrace();
-            throw(e);
-        }
+        return projectRepository.findAllByTeamIdAndActive(teamId, true)
+                .stream()
+                .map(projectMapper::toProjectResponse)
+                .toList();
+    }
+
+    public ProjectResponse getProjectById(String projectId){
+        Project project = projectRepository.findByIdAndActive(projectId, true)
+                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_EXISTED));
+        securityUtils.checkTeamMember(project.getTeam().getId());
+        return projectMapper.toProjectResponse(project);
     }
 
     public ProjectResponse updateProject(String projectId, ProjectRequest request){

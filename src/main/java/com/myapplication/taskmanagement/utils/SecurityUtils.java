@@ -16,8 +16,13 @@ public class SecurityUtils {
 
     final TeamMemberRepository teamMemberRepository;
 
-    public static String getCurrentUserId(){
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+    public static String getCurrentUserId() {
+        try{
+            return SecurityContextHolder.getContext().getAuthentication().getName();
+        }catch(Exception e){
+            throw new RuntimeException(e);
+        }
+
     }
 
     public void checkTeamMember(String teamId){
@@ -37,4 +42,18 @@ public class SecurityUtils {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
     }
+
+    public boolean isAdminOfTeam(String teamId, String userId){
+        return teamMemberRepository
+                .findByTeamIdAndUserIdAndActive(teamId, userId, true)
+                .map(tm -> tm.getRole().equals(Role.ADMIN))
+                .orElse(false);
+    }
+
+    public void checkTeamMemberByUserId(String teamId, String userId){
+        teamMemberRepository
+                .findByTeamIdAndUserIdAndActive(teamId, userId, true)
+                .orElseThrow(() -> new AppException(ErrorCode.TEAMMEMBER_NOT_EXISTED));
+    }
+
 }

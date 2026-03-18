@@ -26,7 +26,16 @@ public enum ErrorCode {
     TASK_NOT_EXISTED(6001, "Task not existed", HttpStatus.NOT_FOUND),
     INVALID_DEADLINE(6002, "Deadline cannot be in the past", HttpStatus.BAD_REQUEST),
 
-    STATUS_NOT_EXISTED(7001, "Status not existed", HttpStatus.NOT_FOUND);
+    STATUS_NOT_EXISTED(7001, "Status not existed", HttpStatus.NOT_FOUND),
+
+    COMMENT_NOT_EXISTED(8001, "Comment not existed", HttpStatus.NOT_FOUND),
+
+    TASKASSIGNMENT_NOT_EXISTED(9001, "Task assignment not existed", HttpStatus.NOT_FOUND),
+    USER_ALREADY_ASSIGNED(9002, "User already assigned to this task", HttpStatus.BAD_REQUEST),
+
+    TASKATTACHMENT_NOT_EXISTED(1101, "Task attachment not existed", HttpStatus.NOT_FOUND),
+
+    NOTIFICATION_NOT_EXISTED(12001, "Notification not existed", HttpStatus.NOT_FOUND),;
 
 
     ErrorCode(int code, String message, HttpStatusCode staticCode){

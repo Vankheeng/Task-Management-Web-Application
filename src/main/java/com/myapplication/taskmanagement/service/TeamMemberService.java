@@ -27,6 +27,7 @@ public class TeamMemberService {
     TeamMemberMapper teamMemberMapper;
     TeamRepository teamRepository;
     UserRepository userRepository;
+    NotificationService notificationService;
 
 
     public TeamMemberResponse createTeamMember(TeamMemberRequest request){
@@ -42,7 +43,10 @@ public class TeamMemberService {
                 .role(request.getRole())
                 .build();
 
-        return teamMemberMapper.toTeamMemberResponse(teamMemberRepository.save(teamMember));
+        teamMember = teamMemberRepository.save(teamMember);
+        notificationService.notifyTeamAdded(user, team);
+
+        return teamMemberMapper.toTeamMemberResponse(teamMember);
     }
 
     public List<TeamMemberResponse> getTeamMembersByTeamId(String teamId){
