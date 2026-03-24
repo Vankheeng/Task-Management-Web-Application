@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import taskListApi from '../../api/taskListApi'
+import { useTree } from '../../context/TreeContext'
 import taskApi from '../../api/taskApi'
 import statusApi from '../../api/statusApi'
 import teamMemberApi from '../../api/teamMemberApi'
@@ -37,10 +38,12 @@ export default function TaskListDetailPage() {
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [editingName, setEditingName] = useState(false)
   const [tlName, setTlName] = useState('')
+  const [taskListName, setTaskListName] = useState('Task List')
   const [projectId, setProjectId] = useState('')
   const [myRole, setMyRole] = useState(() => localStorage.getItem('selectedTeamRole') || 'MEMBER')
 
   const isAdmin = myRole === 'ADMIN'
+  const { refreshTree } = useTree()
   const isMember = myRole === 'MEMBER' || isAdmin
   const teamId = localStorage.getItem('selectedTeamId') || ''
 
@@ -60,6 +63,12 @@ export default function TaskListDetailPage() {
 
   const fetchTasksAndProject = async () => {
     try {
+      // Lấy tên task list
+      const tlRes = await taskListApi.getByProjectId(localStorage.getItem('selectedProjectId') || '')
+      const tls = tlRes.result || []
+      const currentTL = tls.find(tl => tl.id === taskListId)
+      if (currentTL) setTaskListName(currentTL.name)
+
       const res = await taskApi.getByTaskListId(taskListId)
       const taskList = res.result || []
       setTasks(taskList)
@@ -101,9 +110,12 @@ export default function TaskListDetailPage() {
 
   const handleUpdateTLName = async () => {
     if (!isAdmin) { toast.error('Only admins can rename task lists'); return }
+    if (!tlName.trim()) return
     try {
-      await taskListApi.update(taskListId, { name: tlName, projectId })
+      await taskListApi.update(taskListId, { name: tlName.trim(), projectId })
+      setTaskListName(tlName.trim()) // cập nhật title ngay lập tức
       setEditingName(false)
+      refreshTree() // cập nhật sidebar
       toast.success('Task list renamed')
     } catch (e) { toast.error(e?.message || 'Failed to rename') }
   }
@@ -122,10 +134,10 @@ export default function TaskListDetailPage() {
             </div>
           ) : (
             <>
-              <h1 className="font-display font-bold text-3xl text-primary">Task List</h1>
+              <h1 className="font-display font-bold text-3xl text-primary">{taskListName}</h1>
               {/* Rename: chỉ admin */}
               {isAdmin
-                ? <button onClick={() => { setEditingName(true); setTlName('') }}
+                ? <button onClick={() => { setEditingName(true); setTlName(taskListName) }}
                     className="text-slate-400 hover:text-primary"><HiPencil /></button>
                 : <HiLockClosed className="text-slate-300" />}
             </>
