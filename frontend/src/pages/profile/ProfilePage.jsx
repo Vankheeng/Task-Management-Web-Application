@@ -1,149 +1,112 @@
-import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import projectApi from '../../api/projectApi'
-import taskListApi from '../../api/taskListApi'
+import { useState } from 'react'
 import Layout from '../../components/common/Layout'
-import Modal from '../../components/common/Modal'
-import ConfirmDialog from '../../components/common/ConfirmDialog'
-import { HiPlus, HiPencil, HiTrash, HiSave, HiX } from 'react-icons/hi'
+import { useAuth } from '../../context/AuthContext'
+import userApi from '../../api/userApi'
+import { HiPencil, HiSave, HiX } from 'react-icons/hi'
 import dayjs from 'dayjs'
 
-export default function ProjectDetailPage() {
-  const { projectId } = useParams()
-  const navigate = useNavigate()
-  const [project, setProject] = useState(null)
-  const [taskLists, setTaskLists] = useState([])
-  const [editingId, setEditingId] = useState(null)
-  const [editName, setEditName] = useState('')
-  const [showCreate, setShowCreate] = useState(false)
-  const [newName, setNewName] = useState('')
-  const [deleteTarget, setDeleteTarget] = useState(null)
-  const [editingProject, setEditingProject] = useState(false)
-  const [projectForm, setProjectForm] = useState({ name: '', description: '' })
+export default function ProfilePage() {
+  const { user, updateUser } = useAuth()
+  const [editing, setEditing] = useState(false)
+  const [form, setForm] = useState({})
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState('')
 
-  const fetchAll = async () => {
+  const startEdit = () => {
+    setForm({
+      fullName: user?.fullName || '',
+      dob: user?.dob || '',
+      email: user?.email || '',
+      phoneNumber: user?.phoneNumber || '',
+    })
+    setEditing(true)
+    setSuccess(false)
+    setError('')
+  }
+
+  const handleSave = async () => {
     try {
-      const [tlRes] = await Promise.all([
-        taskListApi.getByProjectId(projectId),
-      ])
-      setTaskLists(tlRes.result || [])
-    } catch {}
-  }
-
-  useEffect(() => { fetchAll() }, [projectId])
-
-  const handleCreate = async () => {
-    if (!newName.trim()) return
-    await taskListApi.create({ name: newName, projectId })
-    setNewName('')
-    setShowCreate(false)
-    fetchAll()
-  }
-
-  const handleUpdate = async (id) => {
-    await taskListApi.update(id, { name: editName, projectId })
-    setEditingId(null)
-    fetchAll()
-  }
-
-  const handleDelete = async (id) => {
-    await taskListApi.delete(id)
-    fetchAll()
+      const res = await userApi.updateProfile(form)
+      updateUser(res.result)
+      setEditing(false)
+      setSuccess(true)
+    } catch (err) {
+      setError(err?.message || 'Update failed')
+    }
   }
 
   return (
     <Layout>
-      <div className="fade-in">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-1">
-          {editingProject ? (
-            <div className="flex items-center gap-2 flex-1">
-              <input className="input text-2xl font-display font-bold py-1"
-                value={projectForm.name}
-                onChange={e => setProjectForm(p => ({ ...p, name: e.target.value }))} autoFocus />
-              <button onClick={async () => {
-                await projectApi.update(projectId, projectForm)
-                setEditingProject(false)
-                fetchAll()
-              }} className="text-primary"><HiSave /></button>
-              <button onClick={() => setEditingProject(false)} className="text-slate-400"><HiX /></button>
+      <div className="fade-in max-w-2xl mx-auto">
+        <h1 className="font-display font-bold text-3xl text-primary mb-6">Profile</h1>
+
+        <div className="card p-8">
+          {success && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+              Profile updated successfully!
             </div>
-          ) : (
-            <>
-              <h1 className="font-display font-bold text-3xl text-primary">{project?.name || 'Project'}</h1>
-              <button onClick={() => { setEditingProject(true); setProjectForm({ name: project?.name || '', description: project?.description || '' }) }}
-                className="text-slate-400 hover:text-primary"><HiPencil /></button>
-            </>
           )}
-        </div>
-        {project?.description && (
-          <p className="text-sm text-slate-500 mb-6">Description: {project.description}</p>
-        )}
-
-        <div className="card overflow-hidden mt-4">
-          <div className="grid grid-cols-12 px-4 py-3 bg-surface border-b border-border text-xs font-semibold text-slate-500 uppercase tracking-wide">
-            <div className="col-span-6">Name</div>
-            <div className="col-span-2 text-right">Update</div>
-            <div className="col-span-2 text-right">Del</div>
-            <div className="col-span-2 text-right">Created at</div>
-          </div>
-
-          {taskLists.map(tl => (
-            <div key={tl.id} className="grid grid-cols-12 items-center px-4 py-3 border-b border-border last:border-0 hover:bg-surface">
-              <div className="col-span-6">
-                {editingId === tl.id ? (
-                  <input className="input py-1 text-sm" value={editName}
-                    onChange={e => setEditName(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleUpdate(tl.id)} autoFocus />
-                ) : (
-                  <button onClick={() => navigate(`/task-lists/${tl.id}`)}
-                    className="text-primary font-medium text-sm hover:underline">{tl.name}</button>
-                )}
-              </div>
-              <div className="col-span-2 flex justify-end">
-                {editingId === tl.id ? (
-                  <button onClick={() => handleUpdate(tl.id)} className="text-primary"><HiSave /></button>
-                ) : (
-                  <button onClick={() => { setEditingId(tl.id); setEditName(tl.name) }}
-                    className="text-slate-400 hover:text-primary"><HiPencil /></button>
-                )}
-              </div>
-              <div className="col-span-2 flex justify-end">
-                {editingId === tl.id ? (
-                  <button onClick={() => setEditingId(null)} className="text-slate-400"><HiX /></button>
-                ) : (
-                  <button onClick={() => setDeleteTarget(tl)} className="text-slate-400 hover:text-red-500"><HiTrash /></button>
-                )}
-              </div>
-              <div className="col-span-2 text-right text-sm text-slate-500">
-                {dayjs(tl.createdAt).format('D/M/YYYY')}
-              </div>
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+              {error}
             </div>
-          ))}
+          )}
 
-          <button onClick={() => setShowCreate(true)}
-            className="w-full py-3 text-sm text-primary hover:bg-surface flex items-center justify-center gap-1">
-            <HiPlus /> Add a task list
-          </button>
+          <p className="font-display font-bold text-lg text-slate-700 mb-6">{user?.username}</p>
+
+          <div className="space-y-4">
+            {editing ? (
+              <>
+                {[
+                  { key: 'fullName', label: 'Fullname', type: 'text' },
+                  { key: 'dob', label: 'Date of birth', type: 'date' },
+                  { key: 'email', label: 'Email', type: 'email' },
+                  { key: 'phoneNumber', label: 'Phone number', type: 'tel' },
+                ].map(f => (
+                  <div key={f.key} className="flex items-center gap-3">
+                    <label className="text-sm text-slate-500 w-32">{f.label}:</label>
+                    <input
+                      className="input flex-1"
+                      type={f.type}
+                      value={form[f.key]}
+                      onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
+                    />
+                  </div>
+                ))}
+
+                <div className="flex gap-3 pt-4">
+                  <button onClick={handleSave} className="btn-primary">
+                    <HiSave /> Save
+                  </button>
+                  <button onClick={() => setEditing(false)} className="btn-secondary">
+                    <HiX /> Cancel
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                {[
+                  { label: 'Fullname', value: user?.fullName },
+                  { label: 'Date of birth', value: user?.dob ? dayjs(user.dob).format('D/M/YYYY') : '—' },
+                  { label: 'Email', value: user?.email },
+                  { label: 'Phone number', value: user?.phoneNumber },
+                ].map(f => (
+                  <div key={f.label} className="flex items-center gap-3">
+                    <span className="text-sm text-slate-500 w-32">{f.label}:</span>
+                    <span className="text-sm font-medium text-primary">{f.value || '—'}</span>
+                  </div>
+                ))}
+
+                <div className="pt-4">
+                  <button onClick={startEdit} className="btn-primary">
+                    <HiPencil /> Update
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
-
-      <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Create Task List" size="sm">
-        <div className="space-y-4">
-          <input className="input" placeholder="Task list name" value={newName}
-            onChange={e => setNewName(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleCreate()} autoFocus />
-          <div className="flex gap-2 justify-end">
-            <button onClick={() => setShowCreate(false)} className="btn-secondary">Cancel</button>
-            <button onClick={handleCreate} className="btn-primary">Create</button>
-          </div>
-        </div>
-      </Modal>
-
-      <ConfirmDialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)}
-        onConfirm={() => handleDelete(deleteTarget?.id)}
-        title="Delete Task List"
-        message={`Delete "${deleteTarget?.name}"? All tasks will be removed.`} />
     </Layout>
   )
 }
