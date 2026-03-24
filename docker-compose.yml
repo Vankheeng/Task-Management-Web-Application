@@ -29,7 +29,7 @@ services:
     environment:
       DBMS_USERNAME: ${DBMS_USERNAME:-root}
       DBMS_PASSWORD: ${DBMS_PASSWORD:-123456}
-      DB_HOST: root
+      DB_HOST: mysql
       DB_PORT: 3306
       JWT_SIGNER_KEY: ${JWT_SIGNER_KEY}
     ports:

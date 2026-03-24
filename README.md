@@ -2,192 +2,251 @@
 
 A full-stack task management web application built with Spring Boot and React.
 
+---
+
 ## Features
 
 - **Team Management** — Create teams, manage members with Admin/Member roles
 - **Project Management** — Organize work into projects with custom statuses
 - **Task Management** — Create, assign, and track tasks with priority and deadline
-- **Real-time Notifications** — Get notified on task assignments, status updates, comments
+- **Notifications** — Get notified on task assignments, status updates, comments
 - **Calendar View** — Visualize tasks by deadline across months
 - **Role-based Access Control** — Admins manage structure, members manage tasks
+
+---
 
 ## Tech Stack
 
 ### Backend
-- Java 21
-- Spring Boot 3
-- Spring Security + JWT
-- Spring Data JPA + Hibernate
-- MySQL
-- MapStruct
-- Lombok
+| Technology | Version |
+|---|---|
+| Java | 21 |
+| Spring Boot | 3.x |
+| Spring Security + JWT | — |
+| Spring Data JPA | — |
+| MySQL | 8.0 |
+| MapStruct | 1.5.x |
+| Lombok | — |
 
 ### Frontend
-- React 18 + Vite
-- React Router v6
-- Axios
-- Tailwind CSS
-- Day.js
-- React Icons
+| Technology | Version |
+|---|---|
+| React | 18 |
+| Vite | 5.x |
+| React Router | 6 |
+| Axios | — |
+| Tailwind CSS | 3.x |
+| Day.js | — |
+
+---
 
 ## Project Structure
 
 ```
 taskmanagement/
-├── backend/                  # Spring Boot application
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/myapplication/taskmanagement/
-│   │   │   │   ├── controller/
-│   │   │   │   ├── service/
-│   │   │   │   ├── repository/
-│   │   │   │   ├── entity/
-│   │   │   │   ├── dto/
-│   │   │   │   │   ├── request/
-│   │   │   │   │   └── response/
-│   │   │   │   ├── mapper/
-│   │   │   │   ├── exception/
-│   │   │   │   └── utils/
-│   │   │   └── resources/
-│   │   │       └── application.yaml
-│   │   └── test/
+├── backend/
+│   ├── src/main/java/com/myapplication/taskmanagement/
+│   │   ├── controller/
+│   │   ├── service/
+│   │   ├── repository/
+│   │   ├── entity/
+│   │   ├── dto/
+│   │   ├── mapper/
+│   │   ├── exception/
+│   │   └── utils/
+│   ├── Dockerfile
 │   └── pom.xml
-├── frontend/                 # React application
+├── frontend/
 │   ├── src/
 │   │   ├── api/
 │   │   ├── components/
-│   │   │   ├── common/
-│   │   │   ├── task/
-│   │   │   ├── team/
-│   │   │   ├── project/
-│   │   │   ├── taskList/
-│   │   │   ├── notification/
-│   │   │   └── calendar/
 │   │   ├── context/
 │   │   ├── hooks/
 │   │   ├── pages/
-│   │   │   ├── auth/
-│   │   │   ├── team/
-│   │   │   ├── project/
-│   │   │   ├── taskList/
-│   │   │   ├── task/
-│   │   │   ├── notification/
-│   │   │   ├── calendar/
-│   │   │   └── profile/
-│   │   ├── routes/
 │   │   └── utils/
-│   ├── package.json
-│   └── vite.config.js
-└── document/                 # Documentation
+│   ├── Dockerfile
+│   ├── nginx.conf
+│   └── package.json
+├── document/
+├── docker-compose.yml
+├── .env
+└── README.md
 ```
+
+---
 
 ## Getting Started
 
-### Prerequisites
+### Option 1: Docker (Recommended)
 
-- Java 21+
-- Node.js 18+
-- MySQL 8+
-- Maven 3.8+
+**Prerequisites:** Docker Desktop
 
-### Backend Setup
+**Step 1 — Clone repository**
+```bash
+git clone https://github.com/your-username/taskmanagement.git
+cd taskmanagement
+```
 
-**1. Configure database**
+**Step 2 — Configure .env**
+```env
+MYSQL_ROOT_PASSWORD=123456
+DBMS_USERNAME=root
+DBMS_PASSWORD=123456
+JWT_SIGNER_KEY=your-secret-key-at-least-256-bits-long
+```
 
-Create a MySQL database:
+**Step 3 — Build and run**
+```bash
+docker-compose up --build
+```
+
+**Step 4 — Access**
+| Service | URL |
+|---|---|
+| Frontend | http://localhost |
+| Backend | http://localhost:8080/task-management |
+| MySQL | localhost:3307 |
+
+```bash
+# Stop
+docker-compose down
+
+# Stop and remove data
+docker-compose down -v
+```
+
+---
+
+### Option 2: Local Development
+
+**Prerequisites:** Java 21+, Node.js 18+, MySQL 8+, Maven 3.9+
+
+**Step 1 — Setup database**
 ```sql
 CREATE DATABASE `task-management`;
 ```
 
-**2. Configure application.yaml**
-
+**Step 2 — application.yaml**
 ```yaml
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/task-management
-    username: ${DBMS_USERNAME:root}
-    password: ${DBMS_PASSWORD:your_password}
+    url: "jdbc:mysql://localhost:3307/task-management"
+    username: root
+    password: your_password
 ```
 
-**3. Run backend**
-
+**Step 3 — Run backend**
 ```bash
 cd backend
 mvn spring-boot:run
+# Runs at http://localhost:8080/task-management
 ```
 
-Backend runs at `http://localhost:8080/task-management`
-
-### Frontend Setup
-
-**1. Install dependencies**
-
+**Step 4 — Run frontend**
 ```bash
 cd frontend
 npm install
-```
-
-**2. Configure environment**
-
-Create `.env` file in `frontend/`:
-```env
-VITE_API_URL=http://localhost:8080
-```
-
-**3. Run frontend**
-
-```bash
 npm run dev
+# Runs at http://localhost:5173
 ```
 
-Frontend runs at `http://localhost:5173`
+---
+
+## application.yaml — Docker vs Local
+
+| Setting | Local | Docker |
+|---|---|---|
+| `DB_HOST` | `localhost` | `mysql` (service name) |
+| `DB_PORT` | `3307` | `3306` |
+
+```yaml
+# Tự động chuyển đổi qua biến môi trường
+url: "jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/task-management"
+```
+
+---
 
 ## API Endpoints
 
-| Module | Endpoint | Description |
-|--------|----------|-------------|
-| Auth | `POST /auth/token` | Login |
-| Auth | `POST /auth/logout` | Logout |
-| Users | `POST /users` | Register |
-| Users | `GET /users/my-info` | Get current user |
-| Teams | `GET /teams/my-teams` | Get my teams |
-| Teams | `POST /teams` | Create team |
-| Team Members | `GET /team-members/team/{teamId}` | Get team members |
-| Projects | `GET /projects/team/{teamId}` | Get projects by team |
-| Statuses | `GET /statuses/project/{projectId}` | Get statuses by project |
-| Task Lists | `GET /task-lists/project/{projectId}` | Get task lists |
-| Tasks | `GET /tasks/task-list/{taskListId}` | Get tasks |
-| Tasks | `GET /tasks/{taskId}` | Get task detail |
-| Tasks | `GET /tasks/my-tasks?startDay=&endDay=` | Get my tasks by deadline |
-| Notifications | `GET /notifications` | Get notifications |
+| Module | Method | Endpoint |
+|---|---|---|
+| Auth | POST | `/auth/token` |
+| Auth | POST | `/auth/logout` |
+| Users | POST | `/users` |
+| Users | GET | `/users/my-info` |
+| Users | GET | `/users/search?username=` |
+| Teams | GET | `/teams/my-teams` |
+| Teams | POST/PUT/DELETE | `/teams`, `/teams/{id}` |
+| Team Members | GET | `/team-members/team/{teamId}` |
+| Team Members | POST/PUT/DELETE | `/team-members`, `/team-members/{id}` |
+| Projects | GET | `/projects/team/{teamId}` |
+| Projects | POST/PUT/DELETE | `/projects`, `/projects/{id}` |
+| Statuses | GET | `/statuses/project/{projectId}` |
+| Statuses | POST/PUT/DELETE | `/statuses`, `/statuses/{id}` |
+| Task Lists | GET | `/task-lists/project/{projectId}` |
+| Task Lists | POST/PUT/DELETE | `/task-lists`, `/task-lists/{id}` |
+| Tasks | GET | `/tasks/task-list/{taskListId}` |
+| Tasks | GET | `/tasks/{taskId}` |
+| Tasks | GET | `/tasks/my-tasks?startDay=&endDay=` |
+| Tasks | POST/PUT/DELETE | `/tasks`, `/tasks/{id}` |
+| Assignments | POST/DELETE | `/task-assignments`, `/task-assignments/{id}` |
+| Comments | GET/POST/DELETE | `/comments/task/{taskId}`, `/comments/{id}` |
+| Attachments | POST/DELETE | `/task-attachments`, `/task-attachments/{id}` |
+| Notifications | GET | `/notifications` |
+| Notifications | PUT | `/notifications/read/{id}` |
+| Notifications | PUT | `/notifications/read-all` |
+
+---
 
 ## Role-based Permissions
 
 | Action | Admin | Member |
-|--------|-------|--------|
-| Create/Delete project | ✅ | ❌ |
+|---|---|---|
+| Create / Delete project | ✅ | ❌ |
 | Create task list | ✅ | ✅ |
 | Delete task list | ✅ | ❌ |
-| Create task | ✅ | ✅ |
-| Edit task | ✅ | ✅ |
+| Create / Edit task | ✅ | ✅ |
 | Delete task | ✅ | ❌ |
-| Add/Remove member | ✅ | ❌ |
+| Assign member to task | ✅ | ✅ |
+| Add attachment | ✅ | ❌ |
 | Comment | ✅ | ✅ |
-| Update task status | ✅ | ✅ |
+| Add / Remove team member | ✅ | ❌ |
+
+---
+
+## Docker Architecture
+
+```
+┌──────────────────────────────────────┐
+│           taskei-network             │
+│                                      │
+│  ┌──────────┐   ┌────────────────┐   │
+│  │ frontend │──▶│    backend     │   │
+│  │  :80     │   │    :8080       │   │
+│  │ (Nginx)  │   │ (Spring Boot)  │   │
+│  └──────────┘   └───────┬────────┘   │
+│                         │            │
+│               ┌─────────▼────────┐   │
+│               │      mysql       │   │
+│               │      :3306       │   │
+│               └──────────────────┘   │
+└──────────────────────────────────────┘
+```
+
+---
 
 ## Environment Variables
 
-### Backend
 | Variable | Default | Description |
-|----------|---------|-------------|
+|---|---|---|
+| `DB_HOST` | `localhost` | Database host |
+| `DB_PORT` | `3307` | Database port |
 | `DBMS_USERNAME` | `root` | Database username |
 | `DBMS_PASSWORD` | `123456` | Database password |
-| `JWT_SIGNER_KEY` | — | JWT signing key |
+| `JWT_SIGNER_KEY` | — | JWT secret key (min 256 bits) |
+| `VITE_API_URL` | `http://localhost:8080` | Backend URL (frontend) |
 
-### Frontend
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `VITE_API_URL` | `http://localhost:8080` | Backend URL |
+---
 
 ## License
 

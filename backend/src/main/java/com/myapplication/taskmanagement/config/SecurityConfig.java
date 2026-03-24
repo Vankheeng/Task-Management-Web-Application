@@ -25,7 +25,6 @@ public class SecurityConfig {
     private static final String[] PUBLIC_ENPOINTS = {"/users", "/auth/log-in", "/auth/verify", "/auth/logout", "/auth/refresh"
     };
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity, CustomJwtDecoder customJwtDecoder) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENPOINTS)
