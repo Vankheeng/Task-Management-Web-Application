@@ -107,8 +107,7 @@ export default function Sidebar({ treeData = {}, selectedTeamName = '', selected
           active={location.pathname === '/notifications'}
           collapsed={collapsed}
           onClick={() => navigate('/notifications')}
-          badge={unreadCount > 0 ? <span className="ml-auto badge bg-red-500 text-white text-xs min-w-[20px] text-center">{unreadCount}</span> : null}
-          dot={unreadCount > 0}
+          badge={unreadCount > 0 ? <span className="ml-auto badge bg-red-100 text-red-600 text-xs">{unreadCount}</span> : null}
         />
         <SidebarBtn
           icon={<HiOutlineUser />}
@@ -130,7 +129,7 @@ export default function Sidebar({ treeData = {}, selectedTeamName = '', selected
   )
 }
 
-function SidebarBtn({ icon, label, active, collapsed, onClick, badge, suffix, dot }) {
+function SidebarBtn({ icon, label, active, collapsed, onClick, badge, suffix }) {
   return (
     <button
       onClick={onClick}
@@ -140,13 +139,7 @@ function SidebarBtn({ icon, label, active, collapsed, onClick, badge, suffix, do
         ${active ? 'bg-primary-light text-primary' : ''}
         ${collapsed ? 'justify-center' : ''}`}
     >
-      {/* Icon với dot đỏ khi collapsed */}
-      <span className="relative text-lg flex-shrink-0">
-        {icon}
-        {collapsed && dot && (
-          <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
-        )}
-      </span>
+      <span className="text-lg flex-shrink-0">{icon}</span>
       {!collapsed && <span className="flex-1 text-left truncate">{label}</span>}
       {!collapsed && badge}
       {suffix}
