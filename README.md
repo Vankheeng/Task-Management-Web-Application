@@ -75,6 +75,7 @@ taskmanagement/
 ├── .env
 └── README.md
 ```
+---
 ## Frontend Design
 [View on Figma](https://www.figma.com/design/iQS5E32Zldf4Cq1drg9IYL/Taskie---Task-Management?node-id=0-1&t=1ffwwfUX4j1D8QKr-1)
 
